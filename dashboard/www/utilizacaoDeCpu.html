@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1" >
+	<link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.barRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.categoryAxisRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.pointLabels.min.js"></script>
+</head>
+
+ 	<style>
+ 		.jqplot-title{
+ 			font-weight:bold;
+ 		}
+ 	</style>
+ <body>
+ 	
+ <script charset="ISO-8859-1">
+ 
+	 $(document).ready(function(){
+		atualizaGrafico();
+	 });
+
+	 $(window).bind("orientationchange", orientationChange);
+
+		function orientationChange(){
+		
+			//plot3.destroy();
+			showLoader();
+			$('#chart1').empty();
+			//plot3.replot(true);
+			atualizaGrafico();
+		}	
+
+		
+		function atualizaGrafico(){
+
+
+		var wsUrl = "http://mobileserv.rkam.com.br/dashboardServices/services.php";
+	    var soapRequest =
+				'<?xml version="1.0" encoding="utf-8"?> \
+				<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+					xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+				  <soap:Body> \
+					<graficoUtilizacaoCpu xmlns="http://mobileserv.rkam.com.br/dashboardServices/"> \
+					  <strLogin>' + 'login' + '</strLogin> \
+					</graficoUtilizacaoCpu> \
+				  </soap:Body> \
+				</soap:Envelope>';
+
+				 $.ajax({
+				        type: "POST",
+				        url: wsUrl,
+				        contentType: "text/xml",
+				        dataType: "xml",
+				        data: soapRequest,
+				        success: processSuccess,
+				        error: processError
+				    });
+				
+
+/*	
+			var wsUrl = "http://127.0.0.1:8888/dashboardServices/services.php";
+	    var soapRequest =
+				'<?xml version="1.0" encoding="utf-8"?> \
+				<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+					xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+				  <soap:Body> \
+					<graficoUtilizacaoCpu xmlns="http://127.0.0.1:8888/dashboardServices"> \
+					  <strLogin>' + 'login' + '</strLogin> \
+					</graficoUtilizacaoCpu> \
+				  </soap:Body> \
+				</soap:Envelope>';
+	
+	    $.ajax({
+	        type: "POST",
+	        url: wsUrl,
+	        contentType: "text/xml",
+	        dataType: "xml",
+	        data: soapRequest,
+	        success: processSuccess,
+	        error: processError
+	    });
+*/
+}
+
+  function processSuccess(data, status, req){
+
+			var arrCpus;
+			
+			if (status == "success") {
+		  	var strRetorno = $(req.responseXML).find("return").text();
+				arrCpus = (JSON.parse(strRetorno)).cpus;
+				console.log(arrCpus);
+
+				
+        $.jqplot.config.enablePlugins = true;
+        var s1 = arrCpus;
+        //var ticks = ['10','20','30','40','50','60','70','80','90','100'];
+			}
+				hideLoader();
+				
+				   var chart;
+ 
+        chart = new Highcharts.Chart({
+          chart: {
+            renderTo: 'chart1',
+/*					zoomType: 'x',
+        		resetZoomButton: {
+            			position: {
+			                    			x: 0,
+			                    			y: -30
+			                				}
+			            					}, */
+            type: 'column'
+          },
+          title: {
+            text: 'Utilização de CPU',
+            style: {
+                    font: 'bold 12px "Trebuchet MS", Verdana, sans-serif',
+                    color: '#000'
+                }
+          },
+          subtitle: {
+            text: ''
+          },
+          xAxis: {
+            categories: [
+              10,20,30,40,50,60,70,80,90,100
+            ],
+            labels: {
+                  style: {
+                      color: '#000',
+                      font: '6px Helvetica',
+                      fontWeight: 'bold',
+                      width: '100px'
+                  }
+                 
+              }
+          },
+          yAxis: {
+            min: 0,
+            title: {
+              text: ' '
+            },
+           labels: {
+                  style: {
+                      color: '#000',
+                      font: '6px Helvetica',
+                      fontWeight: 'bold',
+                      paddingRight: '15px'
+                  }
+                 
+              }
+
+          },
+          legend: {
+            enabled: false
+                      },
+          tooltip: {
+            enabled: false,
+            formatter: function() {
+              return ''+
+                this.x +': '+ this.y ;
+            }
+          },
+          plotOptions: {
+            column: {
+              pointPadding: -0.1,
+              borderWidth: 0,
+              colorByPoint: true,
+              dataLabels: {
+                enabled: true,
+                  style: {
+                    fontSize: '6px',
+                    fontWeight: 'bold',
+                    fontFamily: 'Verdana, sans-serif',
+                    color: '#000'
+                }
+              },
+               colors: [
+                '#0080c0',
+                '#0080c0',
+                '#0080c0',
+                '#0080c0',
+                '#0080c0',
+                '#0080c0',
+                '#0080c0',
+                '#0080c0',
+                '#ff4646',
+                '#ff0000'
+            ]
+
+            },
+           
+              bar: {
+              dataLabels: {
+                enabled: true,
+                style: {
+                    fontSize: '6px',
+                    fontWeight: 'bold',
+                    fontFamily: 'Verdana, sans-serif',
+                    color: '#000'
+                }
+
+              },
+              enableMouseTracking: false
+            }
+            
+          },
+          
+            series: [{
+            name: 'CPU',
+            data: s1
+  
+          }]
+        });
+
+/*
+				$.jqplot.config.defaultHeight = "220%";
+			  $.jqplot.config.defaultWidth = "90%";
+				
+        plot1 = $.jqplot('chart1', [s1], {
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
+            title: {
+							text: 'Utiliza&ccedil;&atilde;o de CPU',
+							fontSize: '10pt',
+							textColor: '#000',
+							fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+							},
+	          animate: !$.jqplot.use_excanvas,
+						grid: {
+										shadow: true, 
+										shadowWidth: 0,
+										shadowDepth: 0,
+										shadowAlpha: 0.00,
+										background: '#ffffff'
+										},
+						seriesColors:['#2f7ed8','#2f7ed8','#2f7ed8','#2f7ed8','#2f7ed8','#2f7ed8','#2f7ed8','#2f7ed8','#ff4646','#ff0000'],
+            seriesDefaults:{
+                renderer:$.jqplot.BarRenderer,
+								rendererOptions: {
+									varyBarColor: true
+								},
+                pointLabels: { show: true },
+								shadow: false
+            },
+            axes: {
+                xaxis: {
+                    renderer: $.jqplot.CategoryAxisRenderer,
+                    ticks: ticks,
+										tickOptions: {
+					              fontFamily: 'Courier New',
+					              fontSize: '6pt'
+					          }
+                },
+                yaxis: {
+										tickOptions: {
+					              fontFamily: 'Courier New',
+					              fontSize: '6pt'
+					          }
+                }
+            },
+            highlighter: { show: false }
+        });
+     
+        $('#chart1').bind('jqplotDataClick', 
+            function (ev, seriesIndex, pointIndex, data) {
+                $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+            }
+        );
+    */    
+  }
+
+  function processError(data, status, req) {
+     alert(req.responseText + " " + status);
+  }  
+
+  function showLoader(){
+		
+		$('.search-background').fadeIn(200);
+	};
+	
+	function hideLoader(){
+	
+		$('.search-background').fadeOut(200);
+	};
+
+</script>
+   <!-- DIV DO LOAD DA PAGINA -->
+		<div align="center">
+			<div id="container">
+				<div id="loading" class="search-background" >
+					<div>
+						<img id="imgLoad" src="./img/load.gif" width=35px height=15px alt="" />
+						<p>Carregando...</p>
+					</div>
+				</div>
+			</div>
+		</div>	  
+  <div id="chart1" style="height: 220px; width: 100%; position: relative;"> </div>
+  </body>
+</html>

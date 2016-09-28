@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.barRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.categoryAxisRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.pointLabels.min.js"></script>
+</head>
+
+ <body>
+ <script>
+ 
+	 $(document).ready(function(){
+		atualizaGrafico();
+	 });
+
+	 $(window).bind("orientationchange", orientationChange);
+
+		function orientationChange(){
+			showLoader();
+			$('#chart1').empty();
+			atualizaGrafico();
+		}
+
+		
+		function atualizaGrafico(){
+
+
+		var wsUrl = "http://mobileserv.rkam.com.br/dashboardServices/services.php";
+	    var soapRequest =
+				'<?xml version="1.0" encoding="utf-8"?> \
+				<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+					xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+				  <soap:Body> \
+					<graficoUtilizacaoCpu xmlns="http://mobileserv.rkam.com.br/dashboardServices/"> \
+					  <strLogin>' + 'login' + '</strLogin> \
+					</graficoUtilizacaoCpu> \
+				  </soap:Body> \
+				</soap:Envelope>';
+
+				 $.ajax({
+				        type: "POST",
+				        url: wsUrl,
+				        contentType: "text/xml",
+				        dataType: "xml",
+				        data: soapRequest,
+				        success: processSuccess,
+				        error: processError
+				    });
+				
+/*
+	
+	var wsUrl = "http://127.0.0.1:8888/dashboardServices/services.php";
+	    var soapRequest =
+				'<?xml version="1.0" encoding="utf-8"?> \
+				<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+					xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+				  <soap:Body> \
+					<graficoUtilizacaoCpu xmlns="http://127.0.0.1:8888/dashboardServices"> \
+					  <strLogin>' + 'login' + '</strLogin> \
+					</graficoUtilizacaoCpu> \
+				  </soap:Body> \
+				</soap:Envelope>';
+	
+	    $.ajax({
+	        type: "POST",
+	        url: wsUrl,
+	        contentType: "text/xml",
+	        dataType: "xml",
+	        data: soapRequest,
+	        success: processSuccess,
+	        error: processError
+	    });
+*/
+}
+
+  function processSuccess(data, status, req){
+
+			var arrCpus;
+			
+			if (status == "success") {
+		  	var strRetorno = $(req.responseXML).find("return").text();
+				arrCpus = (JSON.parse(strRetorno)).cpus;
+				console.log(arrCpus);
+
+				
+        $.jqplot.config.enablePlugins = true;
+        var s1 = arrCpus;
+        var ticks = ['10','20','30','40','50','60','70','80','90','100'];
+			}
+				hideLoader();
+				$.jqplot.config.defaultHeight = "220%";
+			  $.jqplot.config.defaultWidth = "90%";
+        plot1 = $.jqplot('chart1', [s1], {
+            // Only animate if we're not using excanvas (not in IE 7 or IE 8)..
+            title: 'Utiliza��o de CPU',
+            animate: !$.jqplot.use_excanvas,
+						grid: {
+										shadow: false, 
+										shadowWidth: 0,
+										shadowDepth: 0,
+										shadowAlpha: 0.00
+										},
+						seriesColors:['#0080c0','#0080c0','#0080c0','#0080c0','#0080c0','#0080c0','#0080c0','#0080c0','#ff4646','#ff0000'],
+            seriesDefaults:{
+                renderer:$.jqplot.BarRenderer,
+								rendererOptions: {
+									varyBarColor: true
+								},
+                pointLabels: { show: true }
+            },
+            axes: {
+                xaxis: {
+                    renderer: $.jqplot.CategoryAxisRenderer,
+                    ticks: ticks,
+										tickOptions: {
+					              fontFamily: 'Courier New',
+					              fontSize: '6pt'
+					          }
+                },
+                yaxis: {
+										tickOptions: {
+					              fontFamily: 'Courier New',
+					              fontSize: '6pt'
+					          }
+                }
+            },
+            highlighter: { show: false }
+        });
+     
+        $('#chart1').bind('jqplotDataClick', 
+            function (ev, seriesIndex, pointIndex, data) {
+                $('#info1').html('series: '+seriesIndex+', point: '+pointIndex+', data: '+data);
+            }
+        );
+  }
+
+  function processError(data, status, req) {
+     alert(req.responseText + " " + status);
+  }  
+
+  function showLoader(){
+		
+		$('.search-background').fadeIn(200);
+	};
+	
+	function hideLoader(){
+	
+		$('.search-background').fadeOut(200);
+	};
+
+</script>
+   <!-- DIV DO LOAD DA PAGINA -->
+		<div align="center">
+			<div id="container">
+				<div id="loading" class="search-background" >
+					<div>
+						<img id="imgLoad" src="./img/load.gif" width=35px height=15px alt="" />
+						<p>Carregando...</p>
+					</div>
+				</div>
+			</div>
+		</div>	  
+   <div id="chart1" style="top:10%;"> </div>
+
+  </body>
+</html>

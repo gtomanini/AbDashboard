@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<meta http-equiv="cache-control" content="max-age=0" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<meta http-equiv="expires" content="0" />
+
+	<meta http-equiv="pragma" content="no-cache" />
+	
+	<link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />
+ <script type="text/javascript" src="js/highcharts.js"></script>
+ <script type="text/javascript" src="js/highcharts-more.js"></script>
+ <script type="text/javascript" src="js/highcharts-exporting.js"></script>
+
+</head>
+
+ <body>
+ <script>
+ 	$(document).ready(function(){
+	 	atualizaGrafico();
+ 	});
+
+ 	$(window).bind("orientationchange", orientationChange);
+
+ 	function orientationChange(){
+ 		
+		//plot3.destroy();
+		showLoader();
+		$('#chart1').empty();
+		//plot3.replot(true);
+		atualizaGrafico();
+	}	
+
+ 	function atualizaGrafico(){
+
+ 						var wsUrl = "http://mobileserv.rkam.com.br/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoAlertasCpu xmlns="http://mobileserv.rkam.com.br/dashboardServices"> \
+											<strLogin>' + 'login' + '</strLogin> \
+											</graficoAlertasCpu> \
+										  </soap:Body> \
+										</soap:Envelope>';
+
+										$.ajax({
+						                    type: "POST",
+						                    url: wsUrl,
+						                    contentType: "text/xml",
+						                    dataType: "xml",
+						                    data: soapRequest,
+						                    success: processSuccess,
+						                    error: processError
+						               });
+
+/*
+					var wsUrl = "http://127.0.0.1:8888/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoAlertasCpu xmlns="http://127.0.0.1:8888/dashboardServices"> \
+											<strLogin>' + 'login' + '</strLogin> \
+											</graficoAlertasCpu> \
+										  </soap:Body> \
+										</soap:Envelope>';
+	
+	                $.ajax({
+	                    type: "POST",
+	                    url: wsUrl,
+	                    contentType: "text/xml",
+	                    dataType: "xml",
+	                    data: soapRequest,
+	                    success: processSuccess,
+	                    error: processError
+	               });
+*/
+}
+
+  function processSuccess(data, status, req){
+	 
+	  if (status == "success") {
+			var strRetorno = $(req.responseXML).find("return").text();
+
+			
+	  hideLoader();
+	  s = [strRetorno];
+	  s1 = parseInt(s);
+	  var chart;
+	  chart = new Highcharts.Chart({
+		    chart: {
+	            renderTo: 'chart1',
+	            type: 'gauge',
+	            plotBackgroundColor: null,
+	            plotBackgroundImage: null,
+	            plotBorderWidth: 0,
+	            plotShadow: false
+	        },
+	        
+	        title: {
+	            text: 'Alertas de CPU'
+	        },
+	        
+	        pane: {
+	            startAngle: -150,
+	            endAngle: 150,
+	            background: [{
+	                backgroundColor: {
+	                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+	                    stops: [
+	                        [0, '#FFF'],
+	                        [1, '#333']
+	                    ]
+	                },
+	                borderWidth: 0,
+	                outerRadius: '109%'
+	            }, {
+	                backgroundColor: {
+	                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+	                    stops: [
+	                        [0, '#333'],
+	                        [1, '#FFF']
+	                    ]
+	                },
+	                borderWidth: 1,
+	                outerRadius: '107%'
+	            }, {
+	                // default background
+	            }, {
+	                backgroundColor: '#DDD',
+	                borderWidth: 0,
+	                outerRadius: '105%',
+	                innerRadius: '103%'
+	            }]
+	        },
+	           
+	        // the value axis
+	        yAxis: {
+	            min: 0,
+	            max: 1000,
+	            
+	            minorTickInterval: 'auto',
+	            minorTickWidth: 1,
+	            minorTickLength: 10,
+	            minorTickPosition: 'inside',
+	            minorTickColor: '#666',
+	    
+	            tickPixelInterval: 30,
+	            tickWidth: 2,
+	            tickPosition: 'inside',
+	            tickLength: 10,
+	            tickColor: '#666',
+	            labels: {
+	                step: 2,
+	                rotation: 'auto'
+	            },
+	            title: {
+	               // text: 'km/h'
+	            },
+	            plotBands: [{
+	                from: 0,
+	                to: 300,
+	                color: '#55BF3B' // green
+	            }, {
+	                from: 301,
+	                to: 450,
+	                color: '#DDDF0D' // yellow
+	            }, {
+	                from: 451,
+	                to: 1000,
+	                color: '#DF5353' // red
+	            }]        
+	        },
+	    
+	        series: [{
+	            name: 'Conectados',
+	            data: [s1],
+	            tooltip: {
+	        	enabled: false,
+	                valueSuffix: '.'
+	            }
+	        }],
+						exporting: {
+            	enabled: false
+        }
+
+			});
+	  }	
+}
+
+
+  function processError(data, status, req) {
+      alert(req.responseText + " " + status);
+  }  
+
+	
+
+	function showLoader(){
+		
+		$('.search-background').fadeIn(200);
+	};
+	
+	function hideLoader(){
+	
+		$('.search-background').fadeOut(200);
+	};
+
+</script>
+<!-- DIV DO LOAD DA PAGINA -->
+		<div align="center">
+			<div id="container">
+				<div id="loading" class="search-background" >
+					<div>
+						<img id="imgLoad" src="./img/load.gif" alt="" />
+						<p>Carregando...</p>
+					</div>
+				</div>
+			</div>
+		</div>	  
+   <div id="chart1" style="height: 220px; width: 100%; position: relative;"> </div>
+   
+</body>
+</html>
+

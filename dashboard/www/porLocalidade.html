@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.barRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.categoryAxisRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.pointLabels.min.js"></script>
+</head>
+ <body>
+ 	<style>
+ 		.jqplot-title{
+ 			font-weight:bold;
+ 		}
+		
+ 	</style>
+ <script charset="ISO-8859-1">
+ 
+	 $(document).ready(function(){
+		atualizaGrafico();
+	 });
+
+	 $(window).bind("orientationchange", orientationChange);
+
+		function orientationChange(){
+		
+			//plot3.destroy();
+			showLoader();
+			$('#chart1').empty();
+			//plot3.replot(true);
+			atualizaGrafico();
+		}	
+
+
+	 
+	 function atualizaGrafico(){
+
+
+	 								var wsUrl = "http://mobileserv.rkam.com.br/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoPorLocalidade xmlns="http://mobileserv.rkam.com.br/dashboardServices"> \
+											  <strLogin>' + 'login' + '</strLogin> \
+											</graficoPorLocalidade> \
+										  </soap:Body> \
+										</soap:Envelope>';
+
+										 $.ajax({
+							                    type: "POST",
+							                    url: wsUrl,
+							                    contentType: "text/xml",
+							                    dataType: "xml",
+							                    data: soapRequest,
+							                    success: processSuccess,
+							                    error: processError
+							                });
+
+										
+
+/*
+	
+		var wsUrl = "http://127.0.0.1:8888/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoPorLocalidade xmlns="http://127.0.0.1:8888/dashboardServices/"> \
+											  <strLogin>' + 'login' + '</strLogin> \
+											</graficoPorLocalidade> \
+										  </soap:Body> \
+										</soap:Envelope>';
+	
+	                $.ajax({
+	                    type: "POST",
+	                    url: wsUrl,
+	                    contentType: "text/xml",
+	                    dataType: "xml",
+	                    data: soapRequest,
+	                    success: processSuccess,
+	                    error: processError
+	                });
+*/
+}
+	
+
+
+  function processSuccess(data, status, req){
+
+			var arrUnb;
+			
+			
+			if (status == "success") {
+				var strRetorno = $(req.responseXML).find("return").text();
+				arrUnb = converterEmArray(strRetorno.split("@")[0], strRetorno.split("@")[1]);
+			}
+
+			$(document).ready(function(){
+			hideLoader();
+			$.jqplot.config.defaultHeight = "220%";
+		  $.jqplot.config.defaultWidth = "90%";
+			
+			plot5 = $.jqplot('chart1', [arrUnb], {
+            // captureRightClick: true,
+						title: {
+							text: 'Usu&aacute;rios por localidade',
+							fontSize: '10pt',
+							textColor: '#000',
+							fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+							},
+						seriesColors:['#2f7ed8'],	
+						grid: {
+										shadow: true, 
+										shadowWidth: 0,
+										shadowDepth: 0,
+										shadowAlpha: 0.00,
+										background: '#ffffff'
+									},
+            animate: !$.jqplot.use_excanvas,
+            seriesDefaults:{
+                renderer:$.jqplot.BarRenderer,
+                // shadowAngle: 135,
+                rendererOptions: {
+                    barDirection: 'horizontal',
+                    highlightMouseDown: true ,
+										barWidth : 10  
+                },
+                pointLabels: {show: true, formatString: '%d'},
+								shadow: false,
+								lineWidth: '100px'
+            },
+            legend: {
+                show: false,
+                location: 'e',
+                placement: 'outside'
+            },
+            axes: {
+                yaxis: {
+                    renderer: $.jqplot.CategoryAxisRenderer,
+										tickOptions: {
+					              fontFamily: 'Verdana, sans-serif',
+					              fontSize: '6pt'
+					          }
+                },
+                xaxis: {
+										tickOptions: {
+					              fontFamily: 'Verdana, sans-serif',
+					              fontSize: '6pt'
+					          }
+                }
+            }
+        });
+		});
+  }
+  
+
+  function processError(data, status, req) {
+     alert(req.responseText + " " + status);
+  }  
+
+	function converterEmArray(strDadosDesc, strDadosTotal){
+		var arrRetorno = new Array();
+		var arrDadosDesc = strDadosDesc.split(',');
+		var arrDadosTotal = strDadosTotal.split(',');
+		//for(i=0; i<arrDadosDesc.length; i++){
+		for(i=arrDadosDesc.length-1; i>=0; i--){
+			colunas = new Array();
+			colunas.push(Number(arrDadosTotal[i].trim()));
+			colunas.push(arrDadosDesc[i].trim());
+		  arrRetorno.push(colunas);
+		}
+		return arrRetorno;
+	}
+
+function showLoader(){
+		
+		$('.search-background').fadeIn(200);
+	};
+	
+	function hideLoader(){
+	
+		$('.search-background').fadeOut(200);
+	};
+
+</script>
+   <!-- DIV DO LOAD DA PAGINA -->
+		<div align="center">
+			<div id="container">
+				<div id="loading" class="search-background" >
+					<div>
+						<img id="imgLoad" src="./img/load.gif" alt="" />
+						<p>Carregando...</p>
+					</div>
+				</div>
+			</div>
+		</div>	  
+    <div id="chart1" style="height: 220px; width: 100%; position: relative;">
+    </div>
+  </body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+    <head>
+   
+        <meta charset="utf-8">
+        <title>Dashboard</title>
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width">
+				<meta http-equiv="cache-control" content="max-age=0" />
+				<meta http-equiv="cache-control" content="no-cache" />
+				<meta http-equiv="expires" content="0" />
+				<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+				<meta http-equiv="pragma" content="no-cache" />
+        
+        <!-- CSS -->
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/style.css">
+        
+        <!-- Scripts -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/modernizr-2.6.1.min.js"></script>
+        <script src="js/main.js"></script>
+        
+    </head>
+    
+    <body>
+                
+        <div id="left-menu">
+            
+            <div class="wrapmenu">
+              
+              <h3>Menu</h3>
+             
+              <ul class="menu">
+                <li><a id="mostra1" class="fechar" href="#"><i class="fl ico ico-30 i-news"></i><span>Total de usu&aacute;rios conectados</a></span></li>
+                <li><a id="mostra2" class="fechar" href="#"><i class="fl ico ico-30 i-news"></i><span>Por localidade</a></span></li>
+                <li><a id="mostra3" class="fechar" href="#"><i class="fl ico ico-30 i-news"></i><span>Utiliza&ccedil;&atilde;o de CPU</a></span></li>
+                <li><a id="mostra4" class="fechar" href="#"><i class="fl ico ico-30 i-news"></i><span>Alertas de CPU</a></span></li>
+                <li><a id="mostra5" class="fechar" href="#"><i class="fl ico ico-30 i-news"></i><span>Usu&aacute;rios conectados</a></span></li>
+                <li><a id="mostra6" class="fechar" href="#"><i class="fl ico ico-30 i-news"></i><span>CPU 60min</a></span></li>
+              </ul>
+              
+              <!-- Footer / start -->
+              <footer>
+               <!-- Copyright 2013 Tempees.com | <a href="http://www.tempees.com">Original site</a> -->
+              </footer>
+              <!-- Footer / end -->
+              
+            </div>
+        
+        </div>
+        
+        <div id="content-wrapper">
+        
+            <!-- Header / start -->
+            <header>
+              
+                <a href="#" id="menu" class="ico fl">menu</a>
+                <a href="#" id="menu-user1" class="ico fr i-white-use"></a>
+                <a href="#" class="ico fr i-white-mem"></a>
+                <a href="#" class="ico fr i-white-add"></a>
+              
+            </header>
+            <!-- Header / end -->
+    
+            <!-- Content / start -->
+            <section>
+              
+              <div class="pad-12">
+                <div class="white-block status-list pad-2">
+                  <div id="conteudo">
+										<!--	AQUI É CARREGADO O GRÁFICO DE ACORDO COM A SELEÇÃO NO MENU -->
+				  </div>
+                  
+                  <div class="clear"></div>
+                </div>
+               
+              </div>
+              
+            </section>
+            <!-- Content / end -->
+        
+        </div>
+			<script type="text/javascript">
+        
+			$(document).ready(function() {
+					$('#conteudo').load('totalUsuariosConectados.html');
+	  	});
+
+			$('#mostra1').click(function() {
+
+  				$('#conteudo').load('totalUsuariosConectados.html');
+  		});
+			
+				$('#mostra2').click(function() {
+
+  				$('#conteudo').load('porLocalidade.html');
+  		});
+
+				$('#mostra3').click(function() {
+
+	  				$('#conteudo').load('utilizacaoDeCpu.html');
+	  		});
+
+				$('#mostra4').click(function() {
+
+	  				$('#conteudo').load('alertasDeCpuTeste.html');
+	  		});
+
+				$('#mostra5').click(function() {
+
+	  				$('#conteudo').load('usuariosConectadosTeste.html');
+	  		});
+				
+				$('#mostra6').click(function() {
+
+	  				$('#conteudo').load('cpu60Min.html');
+	  		});
+
+		  	$('#menu-user1').click(function(){
+					alert('Funcao nao cadastrada');
+		  	});
+
+				
+
+				$(window).bind("orientationchange", orientationChange);
+				function orientationChange(){
+					if(window.orientation == -90 || window.orientation == 90){
+						// ORIENTAÇÃO PAISAGEM
+						//alert('paisagem');
+						//$('#conteudo').load();
+					}else{
+
+					}
+					
+				}
+
+				//app.initialize();
+			</script>
+    </body>
+</html>

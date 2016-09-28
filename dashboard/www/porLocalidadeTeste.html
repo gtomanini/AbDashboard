@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+</head>
+ <body>
+ 	<style>
+ 		.jqplot-title{
+ 			font-weight:bold;
+ 		}
+		
+ 	</style>
+ <script charset="ISO-8859-1">
+ 
+	 $(document).ready(function(){
+		atualizaGrafico();
+	 });
+
+	 $(window).bind("orientationchange", orientationChange);
+
+		function orientationChange(){
+		
+			//plot3.destroy();
+			showLoader();
+			$('#chart1').empty();
+			//plot3.replot(true);
+			atualizaGrafico();
+		}	
+
+
+	 
+	 function atualizaGrafico(){
+
+/*
+	 								var wsUrl = "http://mobileserv.rkam.com.br/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoPorLocalidade xmlns="http://mobileserv.rkam.com.br/dashboardServices"> \
+											  <strLogin>' + 'login' + '</strLogin> \
+											</graficoPorLocalidade> \
+										  </soap:Body> \
+										</soap:Envelope>';
+
+										 $.ajax({
+							                    type: "POST",
+							                    url: wsUrl,
+							                    contentType: "text/xml",
+							                    dataType: "xml",
+							                    data: soapRequest,
+							                    success: processSuccess,
+							                    error: processError
+							                });
+
+										
+
+*/
+	
+		var wsUrl = "http://127.0.0.1:8888/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoPorLocalidade xmlns="http://127.0.0.1:8888/dashboardServices/"> \
+											  <strLogin>' + 'login' + '</strLogin> \
+											</graficoPorLocalidade> \
+										  </soap:Body> \
+										</soap:Envelope>';
+	
+	                $.ajax({
+	                    type: "POST",
+	                    url: wsUrl,
+	                    contentType: "text/xml",
+	                    dataType: "xml",
+	                    data: soapRequest,
+	                    success: processSuccess,
+	                    error: processError
+	                });
+
+}
+	
+
+
+  function processSuccess(data, status, req){
+
+			var arrUnb;
+			
+			
+			if (status == "success") {
+				var strRetorno = $(req.responseXML).find("return").text();
+				arrUnb = converterEmArray(strRetorno.split("@")[0], strRetorno.split("@")[1]);
+			}
+
+			$(document).ready(function(){
+			//hideLoader();
+			
+			$('#container').highcharts({
+	            chart: {
+	                type: 'bar'
+	            },
+	            title: {
+	                text: 'Historic World Population by Region'
+	            },
+	            subtitle: {
+	                text: 'Source: Wikipedia.org'
+	            },
+	            xAxis: {
+	                categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania'],
+	                title: {
+	                    text: null
+	                }
+	            },
+	            yAxis: {
+	                min: 0,
+	                title: {
+	                    text: 'Population (millions)',
+	                    align: 'high'
+	                },
+	                labels: {
+	                    overflow: 'justify'
+	                }
+	            },
+	            tooltip: {
+	                valueSuffix: ' millions'
+	            },
+	            plotOptions: {
+	                bar: {
+	                    dataLabels: {
+	                        enabled: true
+	                    }
+	                }
+	            },
+	            legend: {
+	                layout: 'vertical',
+	                align: 'right',
+	                verticalAlign: 'top',
+	                x: -40,
+	                y: 100,
+	                floating: true,
+	                borderWidth: 1,
+	                backgroundColor: '#FFFFFF',
+	                shadow: true
+	            },
+	            credits: {
+	                enabled: false
+	            },
+	            series: [{
+	                name: 'Year 1800',
+	                data: [107, 31, 635, 203, 2]
+	            }, {
+	                name: 'Year 1900',
+	                data: [133, 156, 947, 408, 6]
+	            }, {
+	                name: 'Year 2008',
+	                data: [973, 914, 4054, 732, 34]
+	            }]
+	        });
+
+
+
+
+			
+		});
+  }
+  
+
+  function processError(data, status, req) {
+     alert(req.responseText + " " + status);
+  }  
+
+	function converterEmArray(strDadosDesc, strDadosTotal){
+		var arrRetorno = new Array();
+		var arrDadosDesc = strDadosDesc.split(',');
+		var arrDadosTotal = strDadosTotal.split(',');
+		//for(i=0; i<arrDadosDesc.length; i++){
+		for(i=arrDadosDesc.length-1; i>=0; i--){
+			colunas = new Array();
+			colunas.push(Number(arrDadosTotal[i].trim()));
+			colunas.push(arrDadosDesc[i].trim());
+		  arrRetorno.push(colunas);
+		}
+		return arrRetorno;
+	}
+
+function showLoader(){
+		
+		$('.search-background').fadeIn(200);
+	};
+	
+	function hideLoader(){
+	
+		$('.search-background').fadeOut(200);
+	};
+
+</script>
+   <!-- DIV DO LOAD DA PAGINA -->
+		<div align="center">
+			<div id="container">
+				<div id="loading" class="search-background" >
+					<div>
+						<img id="imgLoad" src="./img/load.gif" alt="" />
+						<p>Carregando...</p>
+					</div>
+				</div>
+			</div>
+		</div>	  
+    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+  </body>
+</html>

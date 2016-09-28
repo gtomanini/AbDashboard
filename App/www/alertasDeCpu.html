@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<link rel="stylesheet" type="text/css" href="css/jquery.jqplot.min.css" />
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.canvasTextRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.meterGaugeRenderer.min.js"></script>
+</head>
+
+ <body>
+ <script>
+ 	$(document).ready(function(){
+	 	atualizaGrafico();
+ 	});
+
+ 	$(window).bind("orientationchange", orientationChange);
+
+	function orientationChange(){
+		showLoader();
+		$('#chart1').empty();
+		atualizaGrafico();
+		//timeout = setTimeout('atualizaGrafico()', 3000);
+		// atualizaGrafico();
+		//clearTimeout(timeout);
+	}
+
+ 	function atualizaGrafico(){
+
+
+/*
+ 						var wsUrl = "http://mobileserv.rkam.com.br/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoAlertasCpu xmlns="http://mobileserv.rkam.com.br/dashboardServices"> \
+											<strLogin>' + 'login' + '</strLogin> \
+											</graficoAlertasCpu> \
+										  </soap:Body> \
+										</soap:Envelope>';
+
+										$.ajax({
+						                    type: "POST",
+						                    url: wsUrl,
+						                    contentType: "text/xml",
+						                    dataType: "xml",
+						                    data: soapRequest,
+						                    success: processSuccess,
+						                    error: processError
+						               });
+*/
+
+					var wsUrl = "http://127.0.0.1:8888/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoAlertasCpu xmlns="http://127.0.0.1:8888/dashboardServices"> \
+											<strLogin>' + 'login' + '</strLogin> \
+											</graficoAlertasCpu> \
+										  </soap:Body> \
+										</soap:Envelope>';
+	
+	                $.ajax({
+	                    type: "POST",
+	                    url: wsUrl,
+	                    contentType: "text/xml",
+	                    dataType: "xml",
+	                    data: soapRequest,
+	                    success: processSuccess,
+	                    error: processError
+	               });
+ 
+}
+
+  function processSuccess(data, status, req){
+
+	  if (status == "success") {
+			var strRetorno = $(req.responseXML).find("return").text();
+	  }	
+	  
+	  $(document).ready(function(){
+		  hideLoader();
+		  s1 = [strRetorno];
+		  $.jqplot.config.defaultHeight = "220%";
+		  $.jqplot.config.defaultWidth = "90%";
+		  plot3 = $.jqplot('chart1',[s1],{
+			   title: 'Total de alertas: ' + strRetorno,
+			   grid: { background: '#D3D3D3' },
+		       seriesDefaults: {
+		           renderer: $.jqplot.MeterGaugeRenderer,
+		           rendererOptions: {
+		               min: 00,
+		               max: 200,
+		               intervals:[0, 100, 150, 200],
+		               intervalColors:['#66cc66', '#93b75f', '#E7E658', '#cc6666']
+		           }
+		       }
+		   });
+		});
+		
+  }
+
+  function processError(data, status, req) {
+      alert(req.responseText + " " + status);
+  }  
+
+	function converter(strDados){
+		var arrRetorno = new Array();
+		for(i=0; i<strDados.length; i++){
+		  colunas = new Array();
+			var data = strDados[i].split(';')[0].split(',');
+			colunas[0] = Date.UTC(Number(data[0]), Number(data[1]), Number(data[2]), Number(data[3]), Number(data[4]));
+			colunas[1] = Number(strDados[i].split(';')[1]);
+		  arrRetorno.push(colunas);
+		}
+		return arrRetorno;
+	}
+
+
+	function showLoader(){
+		
+		$('.search-background').fadeIn(200);
+	};
+	
+	function hideLoader(){
+	
+		$('.search-background').fadeOut(200);
+	};
+
+</script>
+<!-- DIV DO LOAD DA PAGINA -->
+		<div align="center">
+			<div id="container">
+				<div id="loading" class="search-background" >
+					<div>
+						<img id="imgLoad" src="./img/load.gif" alt="" />
+						<p>Carregando...</p>
+					</div>
+				</div>
+			</div>
+		</div>	  
+   <div id="chart1"> </div>
+</body>
+</html>
+

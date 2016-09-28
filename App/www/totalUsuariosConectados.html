@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/jquery.jqplot.min.css">
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.jqplot.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.logAxisRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.canvasTextRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.canvasAxisLabelRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.canvasAxisTickRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.dateAxisRenderer.min.js"></script>
+
+	<script type="text/javascript" src="js/jqplot.barRenderer.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.pointLabels.min.js"></script>
+	<script type="text/javascript" src="js/jqplot.enhancedLegendRenderer.min.js"></script>
+	
+	
+</head>
+<style type="text/css">
+#chart1 .jqplot-point-label {
+  font-size: 6pt;
+}
+</style>
+ <body>
+ 
+ <script charset="utf-8">
+ 	// window.setTimeout('location.reload()', 3000); // CONFIG DO TEMPO DE ATUALIZAÇÃO DO GRAFICO
+	$(document).ready(function(){
+		atualizaGrafico();
+	});
+
+	$(window).bind("orientationchange", orientationChange);
+
+	function orientationChange(){
+		plot3.destroy();
+		showLoader();
+		$('#chart1').empty();
+		//plot3.replot(true);
+		atualizaGrafico();
+	}
+
+	
+	function atualizaGrafico(){
+
+		var wsUrl = "http://mobileserv.rkam.com.br/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoTotalUserRede xmlns="http://mobileserv.rkam.com.br/dashboardServices"> \
+											<strLogin>' + 'login' + '</strLogin> \
+											</graficoTotalUserRede> \
+										  </soap:Body> \
+										</soap:Envelope>';
+	
+	                $.ajax({
+	                    type: "POST",
+	                    url: wsUrl,
+	                    contentType: "text/xml",
+	                    dataType: "xml",
+	                    data: soapRequest,
+	                    success: processSuccess,
+	                    error: processError
+	                });
+
+/*
+			var wsUrl = "http://127.0.0.1:8888/dashboardServices/services.php";
+	                var soapRequest =
+										'<?xml version="1.0" encoding="utf-8"?> \
+										<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+											xmlns:xsd="http://www.w3.org/2001/XMLSchema" \
+											xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> \
+										  <soap:Body> \
+											<graficoTotalUserRede xmlns="http://127.0.0.1:8888/dashboardServices"> \
+											<strLogin>' + 'login' + '</strLogin> \
+											</graficoTotalUserRede> \
+										  </soap:Body> \
+										</soap:Envelope>';
+	
+	                $.ajax({
+	                    type: "POST",
+	                    url: wsUrl,
+	                    contentType: "text/xml",
+	                    dataType: "xml",
+	                    data: soapRequest,
+	                    success: processSuccess,
+	                    error: processError
+	                });
+*/
+}
+	
+  function processSuccess(data, status, req){
+		
+			
+			var arrTotalConectados = new Array();
+			var arrTotalDesconectados = new Array();
+			var strTitulo = 'Total de usuarios conectados';
+			
+			if (status == "success") {
+	  		var strRetorno = $(req.responseXML).find("return").text();
+
+			
+		  	var strTotalDesconectadosTmp = strRetorno.split("@")[0];
+				strTotalDesconectadosTmp = strTotalDesconectadosTmp.split(';;');
+				arrTotalDesconectados = converter(strTotalDesconectadosTmp);
+				var strTotalConectadosTmp = strRetorno.split("@")[1];
+				strTotalConectadosTmp = strTotalConectadosTmp.split(';;');
+				arrTotalConectados = converter(strTotalConectadosTmp);
+
+			
+			}
+			$(document).ready(function(){
+				hideLoader();
+				$.jqplot.config.defaultHeight = "220%";
+			    //$.jqplot.config.defaultWidth = "90%";
+				var plot3 = $.jqplot('chart1', [arrTotalConectados, arrTotalDesconectados], {
+					seriesColors: [ "blue", "green" ],
+					shadow: false,
+					legend: {
+				        renderer: $.jqplot.EnhancedLegendRenderer,
+				        labels: ['Conectados','Desconectados'],
+				        show: true, 
+				        placement: 'outsideGrid',
+		                location: 's',
+		                
+		                rendererOptions: {
+                                numberRows : 1,
+                         },
+				        
+				      },
+					grid: {
+						shadow: false
+				      },
+					// animate: !$.jqplot.use_excanvas,
+					seriesDefaults:{
+						shadow: false,
+						//showDataLabels: true,
+						pointLabels:{
+							show:true,
+							location: 'n',
+							formatter: $.jqplot.DefaultTickFormatter,
+							fontSize: '6pt'
+						},
+						markerOptions: {
+							style: 'filledCircle',
+							lineWidth: 1,
+							size: 5
+						}
+					},
+					
+				     axes: {
+						
+					 	xaxis: {
+							shadow: false,
+							type: 'datetime',
+		            		renderer: $.jqplot.CategoryAxisRenderer,
+					        labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+					        tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+					        renderer:$.jqplot.DateAxisRenderer,
+					        tickInterval : '1 hour',
+					        tickOptions: {
+			          			formatString:'%I:%M',
+								showGridline: false,
+					            angle: -30,
+					            fontFamily: 'Arial',
+					            fontSize: '6pt'
+					        }
+					        },
+					        yaxis: {
+					        shadow: false,
+					        min: '0',
+					        tickInterval: '1000',	
+					        label: 'Acessos',
+					        labelPosition: 'middle',
+					        labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
+					        tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+					        tickOptions: {
+					        	angle: -30,
+					        	fontFamily: 'Arial',
+					            fontSize: '6pt',
+					        }
+					        }
+					      }
+        		});
+
+			});
+  }
+
+	function processError(data, status, req) {
+      alert(req.responseText + " " + status);
+	}  
+
+	function converter(strDados){
+		var arrRetorno = new Array();
+		for(i=0; i<strDados.length; i++){
+		  colunas = new Array();
+			var data = strDados[i].split(';')[0].split(',');
+			colunas[0] = new Date(Number(data[0]), Number(data[1]), Number(data[2]), Number(data[3]), Number(data[4]));
+			colunas[1] = Number(strDados[i].split(';')[1]);
+		  arrRetorno.push(colunas);
+		}
+		return arrRetorno;
+	}
+
+	function showLoader(){
+		$('.search-background').fadeIn(200);
+	};
+	
+	function hideLoader(){
+		$('.search-background').fadeOut(200);
+	};
+
+</script>
+<!-- DIV DO LOAD DA PAGINA -->
+		<div align="center">
+			<div id="container">
+				<div id="loading" class="search-background" >
+					<div>
+						<img id="imgLoad" src="./img/load.gif" alt="" />
+						<p>Carregando...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+   <div id="chart1" style="height: 220px; width: 100%;"> </div>
+
+</body>
+</html>
