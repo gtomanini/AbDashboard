@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="minimal-ui, initial-scale=1">
+<meta name="viewport"
+	content="width=device-width, minimal-ui, initial-scale=1">
+<title>AmbevDashBoard</title>
+<link rel="stylesheet" href="_css/queryLoader.css" />
+<script src="_js/jquery.js"></script>
+<script src="_js/jquery.queryloader2.min.js" type="text/javascript"></script>
+
+
+
+<script>
+		$(document).ready(function(){
+			//setInterval(function(){ paginaAvanca(); }, 10000); 
+			//$('#scroll').hide();
+			window.addEventListener('orientationchange', doOnOrientationChange);
+			function doOnOrientationChange()
+  			{
+				if (screen.height > screen.width){
+					
+	    			$('#landscape').show();
+	        		//unLockScroll();
+				}
+    		// switch(window.orientation) 
+    		//	{  
+      	//	case 0:
+      	//		$('#landscape').show();
+      	//		break;
+      	//	case 90:
+      	//		$('#landscape').hide();
+      	//	case 180:
+      	//		$('#landscape').show();
+      	//		break;
+      			//	case -90:
+      		//	$('#landscape').hide();
+      	//		break;
+      	//	}
+  				}
+      window.addEventListener('orientationchange', doOnOrientationChange);
+			
+			
+			//TESTA SE O DISPOSITIVO ESTA NO MODO RETRATO OU PAISAGEM
+			if (screen.height > screen.width){
+					
+    			$('#landscape').show();
+        		//unLockScroll();
+			}
+			
+
+			$(window).bind("orientationchange", orientationChange);
+			
+			orientationChange();
+
+		// window.addEventListener("resize", function() {
+			
+
+
+          //  if( window.outerWidth > window.outerHeight )
+          // {
+          //     window.scrollTo(1,1);
+          //     $('#landscape').hide();
+          //     lockScroll();
+          // }
+          // else{
+          //      $('#landscape').show();
+          //      unLockScroll();
+          // }
+ 		// }, false);
+
+			//screen.lockOrientation('landscape');
+	    	$("body").queryLoader2({
+		        barColor: "#FFF",
+		        backgroundColor: "#20409A",
+		        percentage: true,
+		        barHeight: 1,
+		        completeAnimation: "grow",
+		        minimumTime: 100
+		    });
+		});
+		</script>
+
+<link rel="stylesheet" href="_bootstrap/css/bootstrap.css" />
+<link rel="stylesheet" href="_bootstrap/css/bootstrap-theme.css" />
+<link rel="stylesheet" href="_css/swipe.css" />
+<link rel="stylesheet" href="_css/style.css">
+<link rel="stylesheet" type="text/css" href="_css/jquery.jqplot.min.css" />
+
+<script type="text/javascript" src="_js/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="_js/jqplot.barRenderer.min.js"></script>
+<script type="text/javascript"
+	src="_js/jqplot.categoryAxisRenderer.min.js"></script>
+<script type="text/javascript" src="_js/jqplot.pointLabels.min.js"></script>
+<script type="text/javascript"
+	src="_js/jqplot.canvasTextRenderer.min.js"></script>
+<script type="text/javascript"
+	src="_js/jqplot.meterGaugeRenderer.min.js"></script>
+<script type="text/javascript" src="_js/highcharts.js"></script>
+<script type="text/javascript" src="_js/highcharts-more.js"></script>
+<script type="text/javascript" src="_js/highcharts-exporting.js"></script>
+
+<script src="_bootstrap/js/bootstrap.js"></script>
+<script src="_js/swipe.js"></script>
+<script src="_js/script.js"></script>
+
+</head>
+<body>
+
+
+<div id="landscape">
+<p><b>Os gráficos só funcionam no modo paisagem</b></p>
+</div>
+
+<section>
+<header>
+
+<div class="topo"><!-- menu -->
+
+
+	
+<div class="col-md-5 col-lg-5 col-sm-5 col-xs-5 menu" ><a href="#"
+	onclick="abreFechaMenu(0);" id="dropdownMenu1" data-toggle="dropdown">
+
+<img class="imagenMenu btn_dropdown " alt="" src="_img/icon_menu.png">
+<!--<p>GRÃ�FICOS</p> --> </a>
+<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1"
+	style="display: none;">
+	<li role="presentation"><a role="menuitem"
+		onclick="abreFechaMenu(1);" tabindex="-1" href="#"><img alt=""
+		src="_img/percentages.png" /> Total de usuários conectados</a></li>
+	<li role="presentation" class="divider"></li>
+	<li role="presentation"><a role="menuitem"
+		onclick="abreFechaMenu(2);" tabindex="-1" href="#"><img alt=""
+		src="_img/percentages.png" /> Por localidade</a></li>
+	<li role="presentation" class="divider"></li>
+	<li role="presentation"><a role="menuitem"
+		onclick="abreFechaMenu(3);" tabindex="-1" href="#"><img alt=""
+		src="_img/percentages.png" /> Utilização de CPU</a></li>
+	<li role="presentation" class="divider"></li>
+	<li role="presentation"><a role="menuitem"
+		onclick="abreFechaMenu(4);" tabindex="-1" href="#"><img alt=""
+		src="_img/percentages.png" /> Alertas</a></li>
+		<li role="presentation" class="divider"></li>
+			<li role="presentation"><a role="menuitem"
+		onclick="abreFechaMenu(5);" tabindex="-1" href="#"><img alt=""
+		src="_img/percentages.png" /> Alertas 2</a></li>
+		
+	<li role="presentation" class="divider"></li>
+	<li role="presentation"><a role="menuitem" 
+		onclick="abreFechaMenu(6);" tabindex="-1" href="#"><img alt="" 
+		src="_img/percentages.png"/> VDP Diário</a></li>
+	<li role="presentation" class="divider"></li>
+	<li role="presentation"><a role="menuitem" 
+		onclick="abreFechaMenu(7);" tabindex="-1" href="#"><img alt="" 
+		src="_img/percentages.png"/> VDP CSC Diário</a></li>
+	<li role="presentation" class="divider"></li> 
+	<li role="presentation"><a role="menuitem" 
+		onclick="abreFechaMenu(8);" tabindex="-1" href="#"><img alt="" 
+		src="_img/percentages.png"/> VDP CSC Mensal</a></li>
+	<li role="presentation" class="divider"></li> 
+</ul>
+</div>
+<!-- fim menu --> <!-- logo -->
+<div class="logo"><img alt="AMBEV" src="_img/logo2.png" /></div>
+<!-- fim logo --> <!-- paginaÃ§Ã£o topo --> <!--<div class="paginaTopo">
+						<ol class="breadcrumb">
+						  <li><span id="pgCorrente">1</span></li>
+						  <li><span id="pgTotal">4</span></li>
+
+						</ol>
+					</div> --> <!-- fim paginaÃ§Ã£o topo --></div>
+
+<!--<div class="fundo"> -->
+
+<div id="conteudo" style="height: 150%;"></div>
+<div id="paginas">
+<ul class="pagination">
+	<li><a onclick="paginaRecua()">&laquo;</a></li>
+	<li><a onclick="paginaAvanca()">&raquo;</a></li>
+</ul>
+</div>
+<!--</div> -->
+</header>
+</section>
+<br class="clr" />
+<br class="clr" />
+<!--<footer>
+			<div class="rodape"> 
+				&copy; 2014 Ambev - Todos os direito reservados
+			</div> 
+		</footer>-->
+</body>
+
+
+</html>

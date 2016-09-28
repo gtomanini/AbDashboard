@@ -1,0 +1,98 @@
+/**
+ * Sample Gallery Style
+ * TouchSwipe Style
+ */
+
+    .codeBox{margin-top:1.5em;}
+      .localStyle{margin-top: 2.5em;}
+      .fontLocalStyle{font-size:1.6em;text-align:justify;}
+      .view3{}
+      #galleryTouch
+      {
+      	margin: 0px 15px;
+        height:340px;
+        width:100%;
+        overflow:hidden;
+        position:relative;
+        box-shadow:0px 2px 20px 10px #AFB2B6;
+      }
+      #galleryTouch #imgs
+      {
+        float:left;
+        display:inline;
+        -webkit-transition-property: -webkit-transform;
+        -webkit-transition-duration: 0.5s;
+        -webkit-transition-timing-function: ease-out;
+        padding:0px;
+        margin:0px;
+        width:6000px;
+        /*apply a transfor to kick in the hardware acceleration.  Without this, the first time we add the transform you get odd rendering of the divs (half missing) */
+        -webkit-transform: translate3d(0px,0px,0px);
+      }
+      #galleryTouch #imgs img
+      {
+        padding:0px;
+        margin:0px;
+        width:1339px;
+        height:340px;
+        /*apply a transfor to kick in the hardware acceleration.  Without this, the first time we add the transform you get odd rendering of the divs (half missing) */
+        -webkit-transform: translate3d(0px,0px,0px);
+      }
+      @media (max-width: 600px) {
+      	#galleryTouch #imgs img {
+        	width:320px;
+      	}
+	  }
+     section .entry .listpost li i{display:inline;}
+     section .box {text-align:center;}
+/**
+ * Tricolore theme
+ *
+ * @author Jean Nicolas
+ * @version 1.0.1
+ */
+pre {
+    background-color: #F1F1F1;
+    border: 1px solid #409f89;
+    word-wrap: break-word;
+    margin-top: 20px  !important;
+    margin-bottom: 20px  !important;
+    padding: 25px  !important;
+    font-size: 16px  !important;
+    line-height: 25px !important;
+    color: #444;
+}
+pre, code {
+    font-family: /*'Monaco',*/ 'Consolas', monospace !important;
+}
+pre .comment {
+    color: #f26d7d;
+  font-style: italic;
+}
+pre .constant {
+    color: #6e9cbe;
+  font-weight: bold;
+}
+pre .storage {
+    color: #0000A1;
+}
+pre .string {
+    color: #409f89;
+}
+pre .keyword, pre .selector {
+    color: #6e9cbe;
+  font-weight: bold;
+}
+pre .inherited-class {
+    font-style: italic;
+}
+pre .entity {
+    color: #6e9cbe;
+}
+pre .support {
+    color: #c16b30;
+}
+pre .variable.global, pre .variable.class, pre .variable.instance {
+    color: #a5c261;
+}
+
